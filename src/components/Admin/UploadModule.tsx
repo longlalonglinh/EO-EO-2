@@ -41,6 +41,7 @@ export const UploadModule: React.FC<UploadModuleProps> = ({ onParsedData }) => {
 
     setLoading(true);
     setErrorMsg(null);
+    setRawJsonOutput(null);
 
     try {
       const jsonResultString = await parsePdfWithGemini(base64Data, apiKey.trim() || undefined);
