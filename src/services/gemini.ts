@@ -56,7 +56,7 @@ export async function parsePdfWithGemini(pdfBase64: string, customApiKey?: strin
   const ai = new GoogleGenAI({ apiKey });
 
   const response = await ai.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-3.7-flash',
     contents: [
       {
         role: 'user',
