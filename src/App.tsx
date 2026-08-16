@@ -9,6 +9,7 @@ import { ResultPage } from './components/Student/ResultPage';
 import { MonitoringDashboard } from './components/Admin/MonitoringDashboard';
 import { ManualGrading } from './components/Admin/ManualGrading';
 import { UploadModule } from './components/Admin/UploadModule';
+import { PreviewModule } from './components/Admin/PreviewModule';
 import { ExamData, SubmissionResponse, SubmissionPayload, CheatLog, Question } from './types';
 import { 
   Headphones, 
@@ -650,7 +651,86 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 2. ACTION NỘP BÀI THI (submitExam / submit_exam)
+    // 2. ACTION TẢI LÊN ĐỀ THI (upload_exam / uploadexam)
+    if (action === 'upload_exam' || action === 'uploadexam') {
+      var exam = contents.exam_data;
+      if (!exam) {
+        return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: 'Không tìm thấy dữ liệu exam_data' }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      var sheetE = ss.getSheetByName('EXAMS') || ss.insertSheet('EXAMS');
+      var sheetQ = ss.getSheetByName('QUESTIONS') || ss.insertSheet('QUESTIONS');
+
+      var uExamCode = (exam.exam_code || 'IELTS01').toString().trim().toUpperCase();
+      var uTitle = exam.title || ('Đề thi IELTS ' + uExamCode);
+      var uTestType = exam.test_type || 'Academic';
+      var uDuration = exam.duration_mins || 60;
+      var uAudioUrl = exam.audio_url || '';
+      var uPassageTitle = exam.passage_title || '';
+      var uPassageText = exam.passage_text || '';
+      var uWritingTask1 = exam.writing_task1_prompt || '';
+      var uWritingTask2 = exam.writing_task2_prompt || '';
+
+      sheetE.appendRow([
+        uExamCode,
+        uTitle,
+        uTestType,
+        uDuration,
+        uAudioUrl,
+        uPassageTitle,
+        uPassageText,
+        uWritingTask1,
+        uWritingTask2
+      ]);
+
+      var listeningQs = exam.listening_questions || [];
+      for (var l = 0; l < listeningQs.length; l++) {
+        var lq = listeningQs[l];
+        var lOptions = (lq.options && Array.isArray(lq.options)) ? lq.options.join('|') : (lq.options || '');
+        sheetQ.appendRow([
+          uExamCode,
+          lq.question_id || ('l_' + (l + 1)),
+          'listening',
+          lq.question_text || '',
+          lq.question_type || 'multiple_choice',
+          lOptions,
+          lq.correct_answer || '',
+          lq.max_score || 1,
+          uPassageTitle,
+          uPassageText,
+          uAudioUrl
+        ]);
+      }
+
+      var readingQs = exam.reading_questions || [];
+      for (var r = 0; r < readingQs.length; r++) {
+        var rq = readingQs[r];
+        var rOptions = (rq.options && Array.isArray(rq.options)) ? rq.options.join('|') : (rq.options || '');
+        sheetQ.appendRow([
+          uExamCode,
+          rq.question_id || ('r_' + (r + 1)),
+          'reading',
+          rq.question_text || '',
+          rq.question_type || 'multiple_choice',
+          rOptions,
+          rq.correct_answer || '',
+          rq.max_score || 1,
+          uPassageTitle,
+          uPassageText,
+          uAudioUrl
+        ]);
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: 'success',
+        message: 'Đã lưu đề thi ' + uExamCode + ' lên Google Sheets thành công!',
+        exam_code: uExamCode,
+        total_questions: listeningQs.length + readingQs.length
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 3. ACTION NỘP BÀI THI (submitExam / submit_exam)
     var subSheet = ss.getSheetByName('SUBMISSIONS');
     var cheatSheet = ss.getSheetByName('CHEATLOGS');
 
@@ -1094,51 +1174,11 @@ function doPost(e) {
             {adminTab === 'upload' && <UploadModule onParsedData={(parsed) => setExamData(parsed)} />}
             
             {adminTab === 'preview' && (
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Eye className="w-5 h-5 text-indigo-400" />
-                    Preview Đề Thi Trực Quan (WYSIWYG Inspector)
-                  </h2>
-                  <span className="text-xs text-slate-400">Mã đề: {examData.exam_code}</span>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2">
-                    <h3 className="text-sm font-bold text-indigo-300">{examData.title}</h3>
-                    <p className="text-xs text-slate-400">Audio URL: {examData.audio_url}</p>
-                  </div>
-
-                  {/* Listening Questions Preview */}
-                  <div className="space-y-3">
-                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                      Phần Nghe ({examData.listening_questions.length} câu)
-                    </h4>
-                    <div className="space-y-2">
-                      {examData.listening_questions.map((q, idx) => (
-                        <div key={q.question_id} className="p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs space-y-1">
-                          <span className="font-bold text-slate-200">{idx + 1}. {q.question_text}</span>
-                          <div className="text-slate-500 flex items-center gap-2">
-                            <span>Loại: {q.question_type}</span>
-                            {q.options && <span>| Lựa chọn: {q.options.join(', ')}</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Reading Passage Preview */}
-                  <div className="space-y-3">
-                    <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                      Phần Đọc: {examData.passage_title}
-                    </h4>
-                    <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 font-serif leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap">
-                      {examData.passage_text}
-                    </div>
-                  </div>
-
-                </div>
-              </div>
+              <PreviewModule 
+                gasUrl={gasUrl} 
+                initialExamData={examData} 
+                onSaveToGas={(savedExam) => setExamData(savedExam)} 
+              />
             )}
 
             {adminTab === 'gas_setup' && (

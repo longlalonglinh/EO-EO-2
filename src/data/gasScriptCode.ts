@@ -359,6 +359,84 @@ function doPost(e) {
           }
         }
       }
+    } else if (action === 'upload_exam') {
+      // 3. ACTION TẢI LÊN ĐỀ THI (UPLOAD_EXAM)
+      var exam = payload.exam_data;
+      if (!exam) {
+        return createJsonResponse({ status: 'error', message: 'Không tìm thấy dữ liệu exam_data trong payload' });
+      }
+
+      var sheetE = ss.getSheetByName('EXAMS') || ss.insertSheet('EXAMS');
+      var sheetQ = ss.getSheetByName('QUESTIONS') || ss.insertSheet('QUESTIONS');
+
+      var examCode = (exam.exam_code || 'IELTS01').toString().trim().toUpperCase();
+      var title = exam.title || ('Đề thi IELTS ' + examCode);
+      var testType = exam.test_type || 'Academic';
+      var duration = exam.duration_mins || 60;
+      var audioUrl = exam.audio_url || '';
+      var passageTitle = exam.passage_title || '';
+      var passageText = exam.passage_text || '';
+      var writingTask1 = exam.writing_task1_prompt || '';
+      var writingTask2 = exam.writing_task2_prompt || '';
+
+      // Ghi 1 dòng vào tab EXAMS gồm các thông số tổng quan
+      sheetE.appendRow([
+        examCode,
+        title,
+        testType,
+        duration,
+        audioUrl,
+        passageTitle,
+        passageText,
+        writingTask1,
+        writingTask2
+      ]);
+
+      // Lặp qua mảng listening_questions và reading_questions để ghi từng câu hỏi xuống tab QUESTIONS
+      var listeningQs = exam.listening_questions || [];
+      for (var l = 0; l < listeningQs.length; l++) {
+        var lq = listeningQs[l];
+        var lOptions = (lq.options && Array.isArray(lq.options)) ? lq.options.join('|') : (lq.options || '');
+        sheetQ.appendRow([
+          examCode,
+          lq.question_id || ('l_' + (l + 1)),
+          'listening',
+          lq.question_text || '',
+          lq.question_type || 'multiple_choice',
+          lOptions,
+          lq.correct_answer || '',
+          lq.max_score || 1,
+          passageTitle,
+          passageText,
+          audioUrl
+        ]);
+      }
+
+      var readingQs = exam.reading_questions || [];
+      for (var r = 0; r < readingQs.length; r++) {
+        var rq = readingQs[r];
+        var rOptions = (rq.options && Array.isArray(rq.options)) ? rq.options.join('|') : (rq.options || '');
+        sheetQ.appendRow([
+          examCode,
+          rq.question_id || ('r_' + (r + 1)),
+          'reading',
+          rq.question_text || '',
+          rq.question_type || 'multiple_choice',
+          rOptions,
+          rq.correct_answer || '',
+          rq.max_score || 1,
+          passageTitle,
+          passageText,
+          audioUrl
+        ]);
+      }
+
+      response = {
+        status: 'success',
+        message: 'Đã lưu đề thi ' + examCode + ' lên Google Sheets thành công!',
+        exam_code: examCode,
+        total_questions: listeningQs.length + readingQs.length
+      };
     }
     
   } catch (err) {
