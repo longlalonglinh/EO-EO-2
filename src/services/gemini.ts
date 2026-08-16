@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 
 /**
- * Parse an uploaded IELTS Exam PDF Base64 string into structured Exam JSON using Gemini 2.5 Flash
+ * Parse an uploaded IELTS Exam PDF Base64 string into structured Exam JSON using Gemini 1.5 Flash
  */
 export async function parsePdfWithGemini(pdfBase64: string, customApiKey?: string): Promise<string> {
   const apiKey = customApiKey || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY : undefined);
