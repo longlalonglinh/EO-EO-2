@@ -27,14 +27,14 @@ export const ResultPage: React.FC<ResultPageProps> = ({
         <div className="relative z-10 space-y-4">
           <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-white/20 text-white rounded-full border border-white/30 text-xs font-extrabold uppercase tracking-wider backdrop-blur-md">
             <Sparkles className="w-4 h-4 text-purple-200" />
-            <span>KẾT QUẢ NỘP BÀI THI EO EO TESTING</span>
+            <span>EXAMINATION SUBMISSION RESULT</span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-black text-white">
-            HOÀN THÀNH BÀI THI RỒI!
+            EXAM COMPLETED SUCCESSFULLY!
           </h1>
           <p className="text-sm text-purple-100 max-w-xl mx-auto font-medium">
-            Mã Hồ Sơ (Submission ID): <strong className="text-white font-bold">{result.submission_id}</strong>
+            Submission ID: <strong className="text-white font-bold">{result.submission_id}</strong>
           </p>
         </div>
       </div>
@@ -56,7 +56,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
           </div>
 
           <span className="text-[11px] text-emerald-800 font-extrabold bg-emerald-100 px-3.5 py-1 rounded-full border border-emerald-200">
-            Chấm tự động Server-side
+            Server-side Auto-Graded
           </span>
         </div>
 
@@ -73,8 +73,8 @@ export const ResultPage: React.FC<ResultPageProps> = ({
             </div>
           </div>
 
-          <span className="text-[11px] text-[#503A7A] font-extrabold bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200">
-            Chấm tự động Server-side
+          <span className="text-[11px] text-emerald-800 font-extrabold bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200">
+            Server-side Auto-Graded
           </span>
         </div>
 
@@ -92,7 +92,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
           </div>
 
           <span className="text-[11px] text-amber-800 font-extrabold bg-amber-100 px-3.5 py-1 rounded-full border border-amber-200">
-            Giáo viên đang chờ chấm tay
+            Pending Teacher Evaluation
           </span>
         </div>
 
@@ -102,9 +102,9 @@ export const ResultPage: React.FC<ResultPageProps> = ({
       <div className="p-5 bg-white border border-purple-100/80 rounded-3xl text-xs text-[#503A7A] flex items-start space-x-3 shadow-sm">
         <AlertCircle className="w-5 h-5 text-[#6B51A5] shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="font-extrabold text-[#3C2A63]">Lưu ý sư phạm:</p>
+          <p className="font-extrabold text-[#3C2A63]">Grading &amp; Assessment Information:</p>
           <p className="leading-relaxed">
-            Điểm thô Nghe và Đọc được chấm chuẩn xác trực tiếp từ máy chủ. Điểm Viết 4 tiêu chí (TR, CC, LR, GRA) sẽ được giáo viên bộ môn kiểm tra và phản hồi trực tiếp sau.
+            Listening and Reading raw scores were automatically evaluated and calculated by the system. The 4 Writing assessment criteria (TR, CC, LR, GRA) will be reviewed directly by instructors.
           </p>
         </div>
       </div>
@@ -117,7 +117,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
             className="px-7 py-3.5 bg-[#6B51A5] hover:bg-[#583F8F] text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-purple-950/10 flex items-center space-x-2 transition cursor-pointer"
           >
             <Home className="w-4 h-4" />
-            <span>Trở Lại Màn Hình Chính</span>
+            <span>Return to Candidate Portal</span>
           </button>
         )}
 
@@ -127,7 +127,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
             className="px-7 py-3.5 bg-[#E2DDEC] hover:bg-[#D9D3E4] text-[#3C2A63] font-extrabold text-sm rounded-2xl border border-purple-200/80 flex items-center space-x-2 transition cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Thực Hành Lại Bài Thi</span>
+            <span>Retake Practice Test</span>
           </button>
         )}
       </div>
