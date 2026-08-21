@@ -36,7 +36,7 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
   // Strictly Block Paste
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    setErrorPasteWarning('⚠️ HỆ THỐNG ĐÃ KHÓA THAO TÁC DÁN (PASTE)! Vui lòng tự gõ trực tiếp bằng bàn phím.');
+    setErrorPasteWarning('⚠️ PASTE ACTION IS DISABLED! Please type your response directly using your keyboard.');
     setTimeout(() => {
       setErrorPasteWarning(null);
     }, 4000);
@@ -67,10 +67,10 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
           </div>
           <div>
             <h3 className="text-base font-extrabold text-[#3C2A63] flex items-center gap-2">
-              Kỹ Năng Viết (IELTS Writing Task 1 & Task 2)
+              Writing Section (IELTS Writing Task 1 & Task 2)
             </h3>
             <p className="text-xs text-[#7C68A5] font-medium">
-              Spellcheck: TẮT | Thao tác Paste: KHÓA CHẶT | Đếm từ: REAL-TIME (Loại bỏ khoảng trắng)
+              Spellcheck: DISABLED | Paste Action: BLOCKED | Word Counter: REAL-TIME (Trims whitespace)
             </p>
           </div>
         </div>
@@ -79,7 +79,7 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
         <div className="flex items-center space-x-3">
           <span className="text-xs text-emerald-800 font-extrabold bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-2xl flex items-center gap-1.5">
             <Save className="w-3.5 h-3.5 animate-pulse text-emerald-700" />
-            Auto-saved LocalStorage ({autoSaveTime})
+            Auto-saved Locally ({autoSaveTime})
           </span>
         </div>
       </div>
@@ -143,7 +143,7 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
             </div>
             
             <div className="p-3.5 bg-[#F8F6FC] rounded-2xl border border-purple-100 text-xs text-[#7C68A5] font-medium leading-relaxed">
-              💡 <strong>Lưu ý:</strong> Task 1 yêu cầu viết báo cáo mô tả biểu đồ hoặc quy trình. Yêu cầu tối thiểu 150 từ.
+              💡 <strong>Note:</strong> Task 1 requires writing a descriptive report of a chart, graph, table, or diagram. Minimum requirement is 150 words.
             </div>
           </div>
 
@@ -151,7 +151,7 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
           <div className="lg:col-span-7 bg-white border border-purple-100/80 rounded-3xl p-6 shadow-xl shadow-purple-950/5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-extrabold text-[#3C2A63] uppercase tracking-wider">
-                Khung Soạn Thảo Bài Làm Task 1
+                Task 1 Response Editor
               </span>
               <span className={`text-xs font-extrabold px-3 py-1 rounded-full border ${
                 task1WordCount >= 150
@@ -171,12 +171,12 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
               autoCorrect="off"
               autoCapitalize="off"
               rows={14}
-              placeholder="Gõ bài làm Task 1 của bạn tại đây..."
+              placeholder="Type your Task 1 essay response here..."
               className="w-full p-4 bg-[#F8F6FC] border border-purple-100 rounded-2xl text-sm text-[#3C2A63] placeholder-[#7C68A5] focus:outline-none focus:ring-2 focus:ring-[#6B51A5] transition-all font-mono leading-relaxed"
             />
 
             <div className="flex items-center justify-between text-[11px] text-[#7C68A5] font-medium">
-              <span>Mọi thao tác gõ bàn phím được lưu tự động liên tục</span>
+              <span>Keystrokes are automatically saved continuously</span>
               <span>Spellcheck: Disabled</span>
             </div>
           </div>
@@ -198,7 +198,7 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
             </div>
             
             <div className="p-3.5 bg-[#F8F6FC] rounded-2xl border border-purple-100 text-xs text-[#7C68A5] font-medium leading-relaxed">
-              💡 <strong>Lưu ý:</strong> Task 2 chiếm 2/3 tổng số điểm kỹ năng Viết. Yêu cầu viết ít nhất 250 từ.
+              💡 <strong>Note:</strong> Task 2 accounts for 2/3 of your total Writing score. Minimum requirement is 250 words.
             </div>
           </div>
 
@@ -206,7 +206,7 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
           <div className="lg:col-span-7 bg-white border border-purple-100/80 rounded-3xl p-6 shadow-xl shadow-purple-950/5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-extrabold text-[#3C2A63] uppercase tracking-wider">
-                Khung Soạn Thảo Bài Làm Task 2
+                Task 2 Response Editor
               </span>
               <span className={`text-xs font-extrabold px-3 py-1 rounded-full border ${
                 task2WordCount >= 250
@@ -226,12 +226,12 @@ export const WritingModule: React.FC<WritingModuleProps> = ({
               autoCorrect="off"
               autoCapitalize="off"
               rows={16}
-              placeholder="Gõ bài làm Task 2 của bạn tại đây..."
+              placeholder="Type your Task 2 essay response here..."
               className="w-full p-4 bg-[#F8F6FC] border border-purple-100 rounded-2xl text-sm text-[#3C2A63] placeholder-[#7C68A5] focus:outline-none focus:ring-2 focus:ring-[#6B51A5] transition-all font-mono leading-relaxed"
             />
 
             <div className="flex items-center justify-between text-[11px] text-[#7C68A5] font-medium">
-              <span>Mọi thao tác gõ bàn phím được lưu tự động liên tục</span>
+              <span>Keystrokes are automatically saved continuously</span>
               <span>Spellcheck: Disabled</span>
             </div>
           </div>
