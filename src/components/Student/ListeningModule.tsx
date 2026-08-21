@@ -1,173 +1,148 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Clock, AlertTriangle, Play, Pause, BellRing, Hourglass } from 'lucide-react';
+import React, { useState } from 'react';
+import { Volume2, Play, Pause, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { CountdownTimer } from './CountdownTimer';
 
-interface CountdownTimerProps {
-  initialMinutes: number;
-  testMode?: 'TEST' | 'PRACTICE';
-  sectionName?: string;
-  onTimeExpire?: () => void;
-  className?: string;
-  compact?: boolean;
+export interface ListeningQuestion {
+  id: number;
+  audioUrl?: string;
+  transcript?: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
 }
 
-export const CountdownTimer: React.FC<CountdownTimerProps> = ({
-  initialMinutes,
-  testMode = 'TEST',
-  sectionName,
-  onTimeExpire,
-  className = '',
-  compact = false
+interface ListeningModuleProps {
+  questions?: ListeningQuestion[];
+  onComplete?: (answers: Record<number, number>) => void;
+  timeRemaining?: number;
+}
+
+export const ListeningModule: React.FC<ListeningModuleProps> = ({
+  questions = [],
+  onComplete,
+  timeRemaining = 1800,
 }) => {
-  const [secondsLeft, setSecondsLeft] = useState<number>(Math.max(1, initialMinutes * 60));
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [hasWarned5Min, setHasWarned5Min] = useState<boolean>(false);
-  const hasExpiredRef = useRef(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  // Sync if initialMinutes changes significantly
-  useEffect(() => {
-    setSecondsLeft(Math.max(1, initialMinutes * 60));
-    hasExpiredRef.current = false;
-    setHasWarned5Min(false);
-  }, [initialMinutes]);
+  const handleSelect = (optionIdx: number) => {
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [currentIdx]: optionIdx,
+    }));
+  };
 
-  useEffect(() => {
-    if (isPaused) return;
+  const handleNext = () => {
+    if (currentIdx < questions.length - 1) {
+      setCurrentIdx(prev => prev + 1);
+    }
+  };
 
-    const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          if (!hasExpiredRef.current) {
-            hasExpiredRef.current = true;
-            if (onTimeExpire) {
-              onTimeExpire();
-            }
-          }
-          return 0;
-        }
+  const handlePrev = () => {
+    if (currentIdx > 0) {
+      setCurrentIdx(prev => prev - 1);
+    }
+  };
 
-        // Trigger subtle beep or warning at 5 minutes mark
-        if (prev === 300 && !hasWarned5Min) {
-          setHasWarned5Min(true);
-          try {
-            const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = 520;
-            gain.gain.setValueAtTime(0.1, ctx.currentTime);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.3);
-          } catch (e) {
-            // AudioContext not allowed or silent
-          }
-        }
+  const handleSubmit = () => {
+    if (onComplete) {
+      onComplete(selectedAnswers);
+    }
+  };
 
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isPaused, onTimeExpire, hasWarned5Min]);
-
-  const hours = Math.floor(secondsLeft / 3600);
-  const minutes = Math.floor((secondsLeft % 3600) / 60);
-  const seconds = secondsLeft % 60;
-
-  const formattedTime = hours > 0
-    ? `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-    : `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-  const isCritical = secondsLeft <= 300; // <= 5 mins
-  const isWarning = secondsLeft > 300 && secondsLeft <= 600; // <= 10 mins
-
-  if (compact) {
+  if (!questions || questions.length === 0) {
     return (
-      <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-2xl text-xs font-black transition-all ${
-        isCritical
-          ? 'bg-rose-100 text-rose-700 border border-rose-300 animate-pulse shadow-sm shadow-rose-200'
-          : isWarning
-          ? 'bg-amber-100 text-amber-800 border border-amber-300'
-          : 'bg-[#E2DDEC] text-[#3C2A63] border border-purple-200/80'
-      } ${className}`}>
-        {isCritical ? (
-          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 animate-bounce" />
-        ) : (
-          <Clock className="w-3.5 h-3.5 text-[#6B51A5]" />
-        )}
-        <span className="font-mono text-xs tracking-wider">{formattedTime}</span>
-        {sectionName && <span className="text-[10px] opacity-75 hidden sm:inline">({sectionName})</span>}
+      <div className="p-8 text-center text-stone-500 bg-white rounded-2xl border border-stone-200">
+        <AlertCircle className="w-12 h-12 mx-auto mb-3 text-amber-500" />
+        <h3 className="text-lg font-bold text-stone-800">Không có dữ liệu bài thi Nghe</h3>
+        <p className="text-sm">Vui lòng tải đề thi hoặc cấu hình bộ câu hỏi hợp lệ.</p>
       </div>
     );
   }
 
-  return (
-    <div className={`bg-white border rounded-2xl p-3.5 shadow-md flex items-center justify-between gap-4 transition-all ${
-      isCritical
-        ? 'border-rose-300 bg-rose-50/50 shadow-rose-100 ring-2 ring-rose-400/40'
-        : isWarning
-        ? 'border-amber-300 bg-amber-50/40'
-        : 'border-purple-100 bg-white'
-    } ${className}`}>
-      
-      {/* Left info */}
-      <div className="flex items-center space-x-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-          isCritical
-            ? 'bg-rose-100 text-rose-700 animate-pulse'
-            : isWarning
-            ? 'bg-amber-100 text-amber-700'
-            : 'bg-purple-100 text-[#6B51A5]'
-        }`}>
-          {isCritical ? (
-            <BellRing className="w-5 h-5 text-rose-600 animate-bounce" />
-          ) : (
-            <Hourglass className="w-5 h-5" />
-          )}
-        </div>
+  const currentQ = questions[currentIdx];
 
-        <div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#7C68A5]">
-              {sectionName ? `Time Remaining: ${sectionName}` : 'Exam Time Remaining'}
-            </span>
-            {testMode === 'TEST' && (
-              <span className="text-[9px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-extrabold border border-rose-200">
-                LOCKED
-              </span>
-            )}
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-stone-200 shadow-sm">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
+            <Volume2 className="w-6 h-6" />
           </div>
-          <div className="flex items-baseline space-x-2">
-            <span className={`font-mono text-xl sm:text-2xl font-black tracking-tight ${
-              isCritical ? 'text-rose-600' : isWarning ? 'text-amber-700' : 'text-[#3C2A63]'
-            }`}>
-              {formattedTime}
-            </span>
-            <span className="text-[11px] text-[#7C68A5] font-medium">
-              {isCritical ? '⚠️ Time almost up!' : isWarning ? 'Under 10 minutes left' : 'Total allocated time'}
-            </span>
+          <div>
+            <h2 className="text-base font-bold text-stone-900">Kỹ Năng Nghe (Listening Section)</h2>
+            <p className="text-xs text-stone-500">Câu hỏi {currentIdx + 1} / {questions.length}</p>
           </div>
         </div>
+        <CountdownTimer initialSeconds={timeRemaining} onTimeUp={handleSubmit} />
       </div>
 
-      {/* Right Controls in Practice Mode */}
-      {testMode === 'PRACTICE' && (
-        <button
-          type="button"
-          onClick={() => setIsPaused(!isPaused)}
-          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-            isPaused
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-              : 'bg-[#E2DDEC] hover:bg-[#D9D3E4] text-[#3C2A63]'
-          }`}
-          title={isPaused ? 'Resume timer' : 'Pause timer'}
-        >
-          {isPaused ? <Play className="w-3.5 h-3.5 fill-current" /> : <Pause className="w-3.5 h-3.5" />}
-          <span>{isPaused ? 'Resume' : 'Pause'}</span>
-        </button>
-      )}
+      <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-sm space-y-6">
+        <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between">
+          <span className="text-sm font-medium text-stone-700">File âm thanh bài nghe:</span>
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="flex items-center space-x-2 px-4 py-2 bg-[#3C2A63] text-white rounded-xl text-sm font-semibold hover:bg-[#2A1D45] transition-all"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            <span>{isPlaying ? 'Tạm dừng' : 'Phát âm thanh'}</span>
+          </button>
+        </div>
 
+        <div className="space-y-4">
+          <h3 className="text-base font-semibold text-stone-800">{currentQ.question}</h3>
+          <div className="grid grid-cols-1 gap-3">
+            {currentQ.options.map((option, idx) => {
+              const isSelected = selectedAnswers[currentIdx] === idx;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleSelect(idx)}
+                  className={`p-4 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    isSelected
+                      ? 'border-[#3C2A63] bg-purple-50 text-[#3C2A63] font-semibold'
+                      : 'border-stone-200 hover:border-stone-300 text-stone-700'
+                  }`}
+                >
+                  <span className="text-sm">{option}</span>
+                  {isSelected && <CheckCircle2 className="w-5 h-5 text-[#3C2A63]" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t border-stone-100">
+          <button
+            onClick={handlePrev}
+            disabled={currentIdx === 0}
+            className="flex items-center space-x-1 px-4 py-2 border border-stone-300 rounded-xl text-sm font-medium text-stone-600 disabled:opacity-40"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Câu trước</span>
+          </button>
+
+          {currentIdx === questions.length - 1 ? (
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition-all"
+            >
+              Nộp bài Nghe
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              className="flex items-center space-x-1 px-4 py-2 bg-[#3C2A63] hover:bg-[#2A1D45] text-white rounded-xl text-sm font-medium transition-all"
+            >
+              <span>Câu kế tiếp</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
+
+export default ListeningModule;
