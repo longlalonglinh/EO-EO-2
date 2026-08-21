@@ -86,7 +86,7 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
 
     setViolationCount((prev) => prev + 1);
 
-    setWarningMsg(`⚠️ CẢNH BÁO VI PHẠM: ${reason}`);
+    setWarningMsg(`⚠️ PROCTORING VIOLATION: ${reason}`);
     setTimeout(() => {
       setWarningMsg(null);
     }, 4000);
@@ -121,7 +121,7 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
     // Disable Right Click (Context Menu)
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
-      recordViolation('Thao tác bấm chuột phải (Context Menu)');
+      recordViolation('Right Click action (Context Menu)');
     };
 
     // Disable F12 and DevTools Shortcuts
@@ -132,13 +132,13 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
         (e.ctrlKey && e.key === 'U')
       ) {
         e.preventDefault();
-        recordViolation('Phím tắt Inspect/F12');
+        recordViolation('Developer Shortcut / F12 Inspect');
       }
     };
 
     // Tab Blur / Switch Window
     const handleWindowBlur = () => {
-      recordViolation('Chuyển tab / Rời khỏi màn hình bài thi (window.onblur)');
+      recordViolation('Tab switched / Left exam window (window.onblur)');
     };
 
     window.addEventListener('contextmenu', handleContextMenu);
@@ -164,10 +164,10 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
             LIVE PROCTORING ACTIVE
           </span>
           <span className="hidden sm:inline border-l border-purple-200 pl-3 font-medium">
-            SBD: <strong className="text-[#3C2A63] font-extrabold">{sbd}</strong>
+            Candidate ID: <strong className="text-[#3C2A63] font-extrabold">{sbd}</strong>
           </span>
           <span className="hidden sm:inline border-l border-purple-200 pl-3 font-medium">
-            Đề: <strong className="text-[#6B51A5] font-extrabold">{examCode}</strong>
+            Exam: <strong className="text-[#6B51A5] font-extrabold">{examCode}</strong>
           </span>
         </div>
 
@@ -179,7 +179,7 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
               className="px-3 py-1 bg-[#6B51A5] hover:bg-[#503A7A] text-white rounded-xl font-extrabold flex items-center gap-1 transition shadow-sm cursor-pointer"
             >
               <Maximize2 className="w-3 h-3" />
-              Bật Màn Hình Đầy (Fullscreen)
+              Enable Fullscreen
             </button>
           )}
 
@@ -189,7 +189,7 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
               ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
               : 'bg-rose-100 text-rose-800 border-rose-200'
           }`}>
-            Vi phạm chuyển tab: {violationCount} / 3
+            Tab Switch Violations: {violationCount} / 3
           </span>
         </div>
       </div>
@@ -210,10 +210,10 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
           </div>
 
           <h2 className="text-3xl font-black text-white mb-2 tracking-tight">
-            MÀN HÌNH BÀI THI ĐÃ BỊ KHÓA TẠM THỜI!
+            EXAM WINDOW IS TEMPORARILY LOCKED!
           </h2>
           <p className="text-sm text-rose-200 max-w-md mb-6 leading-relaxed font-medium">
-            Hệ thống giám sát phát hiện bạn đã vi phạm quy chế chuyển tab/rời màn hình thi quá 3 lần ({violationCount} lần).
+            The automated proctoring system detected 3 or more tab switches / window blur events ({violationCount} violations).
           </p>
 
           {/* Countdown Clock */}
@@ -222,7 +222,7 @@ export const ProctoringMonitor: React.FC<ProctoringMonitorProps> = ({
           </div>
 
           <p className="text-xs text-purple-200 font-medium">
-            Vui lòng giữ nguyên màn hình. Bài thi sẽ tự động mở lại sau khi hết thời gian đếm ngược.
+            Please remain on this screen. Your exam will resume automatically when the timer reaches zero.
           </p>
         </div>
       )}
