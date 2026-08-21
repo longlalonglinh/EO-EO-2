@@ -42,11 +42,11 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sbd.trim()) {
-      setErrorMsg('Vui lòng nhập Số Báo Danh (SBD) của bạn.');
+      setErrorMsg('Please enter your Candidate Registration Number (SBD).');
       return;
     }
     if (!finalCode) {
-      setErrorMsg('Vui lòng nhập Mã Đề Thi.');
+      setErrorMsg('Please enter the Exam Code.');
       return;
     }
 
@@ -68,9 +68,9 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
           <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
             <ShieldCheck className="w-9 h-9 text-white" />
           </div>
-          <h2 className="text-2xl font-black tracking-tight text-white">Đăng Nhập Phòng Thi IELTS</h2>
+          <h2 className="text-2xl font-black tracking-tight text-white">IELTS Candidate Portal</h2>
           <p className="text-xs text-slate-400 mt-1">
-            Nhập SBD và Mã Đề Thi để bắt đầu khởi tạo bài làm chuẩn IELTS
+            Enter your Registration ID and Exam Code to start your IELTS examination
           </p>
         </div>
 
@@ -85,13 +85,13 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
           {/* SBD */}
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-              Số Báo Danh (SBD) <span className="text-rose-400">*</span>
+              Candidate Number (SBD) <span className="text-rose-400">*</span>
             </label>
             <input
               type="text"
               value={sbd}
               onChange={(e) => setSbd(e.target.value)}
-              placeholder="ASK YOUR MENTOR"
+              placeholder="e.g. TS12345"
               className="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl text-white font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               required
             />
@@ -100,13 +100,13 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
           {/* Exam Code Input */}
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-              Mã Đề Thi <span className="text-rose-400">*</span>
+              Exam Code <span className="text-rose-400">*</span>
             </label>
             <input
               type="text"
               value={examCode}
               onChange={(e) => setExamCode(e.target.value)}
-              placeholder="ASK YOUR MENTOR"
+              placeholder="e.g. IELTS01, TEST01, PRAC02"
               className="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl text-white font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               required
             />
@@ -121,7 +121,7 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
             <div className="flex items-center justify-between font-bold text-xs">
               <span className="flex items-center gap-1.5">
                 <BookOpen className="w-4 h-4" />
-                Chế độ tự động phân luồng (% 2):
+                Automatic Mode Routing:
               </span>
               <span className={`px-2 py-0.5 rounded text-xs font-black uppercase ${
                 detectedMode === 'TEST' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-slate-950'
@@ -131,8 +131,8 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
             </div>
             <p className="text-[11px] opacity-80 mt-1.5 leading-relaxed">
               {detectedMode === 'TEST'
-                ? '⚡ Mã số lẻ/TEST: Kích hoạt chế độ THI THẬT. Tự động bật giám sát Fullscreen, khóa chuột phải, đếm vi phạm chuyển tab và nộp bài tuyến tính.'
-                : '📖 Mã số chẵn/PRAC: Kích hoạt chế độ LUYỆN TẬP. Cho phép bật/tắt công cụ highlight, xem lại lịch sử bài đã làm.'}
+                ? '⚡ Odd code / TEST: Activates official examination mode with proctoring, fullscreen enforcement, right-click disabling, and tab tracking.'
+                : '📖 Even code / PRAC: Activates practice mode with flexible highlighting, instant review options, and self-paced navigation.'}
             </p>
           </div>
 
@@ -145,7 +145,7 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
                 onChange={(e) => setShowHistory(e.target.checked)}
                 className="w-4 h-4 text-indigo-600 bg-slate-900 border-slate-700 rounded focus:ring-indigo-500 focus:ring-offset-slate-900"
               />
-              <span>Bật danh sách Lịch Sử Thi (Xem lại bài làm)</span>
+              <span>Show saved exam history (Review submissions)</span>
             </label>
           </div>
 
@@ -154,7 +154,7 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
             type="submit"
             className="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2 transition transform active:scale-[0.98]"
           >
-            <span>Vào Phòng Thi Ngay</span>
+            <span>Enter Examination Room</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
@@ -164,11 +164,11 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
           <div className="mt-6 pt-6 border-t border-slate-700/80">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <History className="w-3.5 h-3.5 text-indigo-400" />
-              Bài Thi Đã Làm Lưu Trên Máy ({savedSubmissions.length})
+              Locally Saved Submissions ({savedSubmissions.length})
             </h3>
 
             {savedSubmissions.length === 0 ? (
-              <p className="text-xs text-slate-500 italic">Chưa có bài thi nào được ghi nhận gần đây.</p>
+              <p className="text-xs text-slate-500 italic">No previous submissions found on this browser.</p>
             ) : (
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                 {savedSubmissions.map((sub, idx) => (
@@ -192,7 +192,7 @@ export const LoginSection: React.FC<LoginSectionProps> = ({
                       className="px-2.5 py-1 bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-medium transition flex items-center gap-1"
                     >
                       <FileCheck className="w-3 h-3" />
-                      Xem
+                      View
                     </button>
                   </div>
                 ))}
